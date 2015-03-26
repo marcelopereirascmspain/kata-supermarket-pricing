@@ -1,27 +1,54 @@
+var productPrices = {
+  "A": 84,
+  "B": 13,
+  "C": 62,
+  "D": 64,
+  "E": 2,
+  "F": 59
+};
 
-var isValidProduct = function (name) {
-  return ["A", "B", "C", "D", "E", "F"].some(function (n) {
+var productTaxes = {
+  "A": 4,
+  "B": 12,
+  "C": 21,
+  "D": 21,
+  "E": 4,
+  "F": 17
+};
+
+var get = function (key, obj) {
+  return obj[key];
+};
+
+var getOrDefault = function (key, obj, defaultValue) {
+  try {
+    return get(key, obj);
+  } catch (ex) {
+    return defaultValue;
+  }
+};
+
+var productNames = Object.keys(productPrices);
+
+var isValidProduct = function (name, productNames) {
+  return productNames.some(function (n) {
     return n === name;
   });
 };
 
-var extractProduct = function (str) {
+var extractProduct = function (str, productNames) {
   return str.split("").filter(function (name) {
-    return isValidProduct(name);
+    return isValidProduct(name, productNames);
   });
 };
 
-var getPriceForProduct = function (product) {
-  switch (product) {
-    case "A": return 84;
-    case "B": return 13;
-    case "C": return 62;
-    case "D": return 64;
-    case "E": return 2;
-    case "F": return 59;
-    default: 0;
-  }
-}
+var getPriceForProduct = function (productName, productPrices) {
+  return getOrDefault(productName, productPrices, 0);
+};
+
+var getTaxForProduct = function (productName, productTaxes) {
+  return getOrDefault(productName, productTaxes, 0) / 100 + 1;
+};
 
 var sum = function (a, b) {
   return a + b;
@@ -29,8 +56,18 @@ var sum = function (a, b) {
 
 module.exports = {
   getPriceFor: function (products) {
-    return extractProduct(products)
-      .map(getPriceForProduct)
+    return extractProduct(products, productNames)
+      .map(function (product) {
+        return getPriceForProduct(product, productPrices);
+      })
+      .reduce(sum, 0);
+  },
+
+  getTaxedPriceFor: function (products) {
+    return extractProduct(products, productNames)
+      .map(function (product) {
+        return getPriceForProduct(product, productPrices) * getTaxForProduct(product, productTaxes);
+      })
       .reduce(sum, 0);
   }
 };
