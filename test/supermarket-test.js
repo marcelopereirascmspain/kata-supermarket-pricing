@@ -45,8 +45,8 @@ describe("supermarket pricing", function function_name (argument) {
   });
 
   describe("#getTaxedPriceFor", function () {
-    it("it should return the price 84 for the product A", function () {
+    it("it should return the price 87.36 for the product A", function () {
       expect(Supermarket.getTaxedPriceFor("A")).toEqual(87.36);
-    }); 
+    });
   });
 });

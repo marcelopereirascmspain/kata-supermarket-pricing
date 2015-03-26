@@ -7,11 +7,13 @@
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./node_modules/mocha/bin/mocha --watch --compilers js:babel/register"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "babel": "^4.7.16",
+    "babel-core": "^4.7.16",
     "expect": "^1.6.0",
     "mocha": "^2.2.1"
   }

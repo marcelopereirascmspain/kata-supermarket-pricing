@@ -1,73 +1,41 @@
-var productPrices = {
-  "A": 84,
-  "B": 13,
-  "C": 62,
-  "D": 64,
-  "E": 2,
-  "F": 59
+import { getOrDefault, sum } from "./utils";
+import { productPrices, productTaxes } from "./data";
+
+let isValidProduct = (name, validNames) => {
+  return validNames.some((validName) => name === validName);
 };
 
-var productTaxes = {
-  "A": 4,
-  "B": 12,
-  "C": 21,
-  "D": 21,
-  "E": 4,
-  "F": 17
-};
-
-var get = function (key, obj) {
-  return obj[key];
-};
-
-var getOrDefault = function (key, obj, defaultValue) {
-  try {
-    return get(key, obj);
-  } catch (ex) {
-    return defaultValue;
-  }
-};
-
-var productNames = Object.keys(productPrices);
-
-var isValidProduct = function (name, productNames) {
-  return productNames.some(function (n) {
-    return n === name;
+let getValidProducts = (scannedValue, validNames) => {
+  return scannedValue.split("").filter(function (name) {
+    return isValidProduct(name, validNames);
   });
 };
 
-var extractProduct = function (str, productNames) {
-  return str.split("").filter(function (name) {
-    return isValidProduct(name, productNames);
-  });
-};
+let getPriceForProduct = (id, prices) => getOrDefault(id, prices, 0);
+let getTaxForProduct = (id, taxes) => getOrDefault(id, taxes, 0);
 
-var getPriceForProduct = function (productName, productPrices) {
-  return getOrDefault(productName, productPrices, 0);
-};
-
-var getTaxForProduct = function (productName, productTaxes) {
-  return getOrDefault(productName, productTaxes, 0) / 100 + 1;
-};
-
-var sum = function (a, b) {
-  return a + b;
+let getTaxedPriceForProduct = (id, prices, taxes) => {
+  return (
+    getPriceForProduct(id, prices) *
+    (getTaxForProduct(id, taxes) / 100 + 1));
 };
 
 module.exports = {
-  getPriceFor: function (products) {
-    return extractProduct(products, productNames)
-      .map(function (product) {
-        return getPriceForProduct(product, productPrices);
-      })
-      .reduce(sum, 0);
+  getPriceFor: (scanned) => {
+    let productNames = Object.keys(productPrices);
+
+    return (
+      getValidProducts(scanned, productNames)
+      .map((product) => getPriceForProduct(product, productPrices))
+      .reduce(sum, 0));
   },
 
-  getTaxedPriceFor: function (products) {
-    return extractProduct(products, productNames)
-      .map(function (product) {
-        return getPriceForProduct(product, productPrices) * getTaxForProduct(product, productTaxes);
-      })
-      .reduce(sum, 0);
+  getTaxedPriceFor: (scanned) => {
+    let productNames = Object.keys(productPrices);
+
+    return (
+      getValidProducts(scanned, productNames)
+      .map((product) => getTaxedPriceForProduct(product, productPrices, productTaxes))
+      .reduce(sum, 0));
   }
 };
