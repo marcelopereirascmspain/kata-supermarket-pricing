@@ -26,10 +26,8 @@ describe("supermarket pricing", function function_name (argument) {
     expect(Supermarket.getPriceFor("F")).toEqual(59);
   });
 
-  it("it should throw an error in the product doesn't exist", function () {
-    expect(function () {
-      Supermarket.getPriceFor("Z")
-    }).toThrow(); 
+  it("it should ignore an unknown product", function () {
+    expect(Supermarket.getPriceFor("Z")).toEqual(0); 
   });
 
   it("it should return the sum of the product prices", function () {
