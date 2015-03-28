@@ -1,50 +1,64 @@
-var expect = require("expect");
-var Supermarket = require("../src/supermarket");
+import expect from "expect";
+import { productPrices, productTaxes } from "../src/data";
+import Supermarket from "../src/supermarket";
+import R from "ramda";
 
 describe("supermarket pricing", () => {
   describe("#getPriceFor", () => {
+    const productTaxes = {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0,
+      "E": 0,
+      "F": 0
+    };
+
+    let getPriceFor = R.partialRight(Supermarket.getPriceFor, productPrices, productTaxes);
+    let getSummaryFor = R.partialRight(Supermarket.getSummaryFor, productPrices, productTaxes);
+
     it("should return the price 84 for the product A", () => {
-      expect(Supermarket.getPriceFor("A")).toEqual(84);
+      expect(getPriceFor("A")).toEqual(84);
     });
 
     it("should return the price 13 for the product B", () => {
-      expect(Supermarket.getPriceFor("B")).toEqual(13);
+      expect(getPriceFor("B")).toEqual(13);
     });
 
     it("should return the price 62 for the product C", () => {
-      expect(Supermarket.getPriceFor("C")).toEqual(62);
+      expect(getPriceFor("C")).toEqual(62);
     });
 
     it("should return the price 64 for the product D", () => {
-      expect(Supermarket.getPriceFor("D")).toEqual(64);
+      expect(getPriceFor("D")).toEqual(64);
     });
 
     it("should return the price 2 for the product E", () => {
-      expect(Supermarket.getPriceFor("E")).toEqual(2);
+      expect(getPriceFor("E")).toEqual(2);
     });
 
     it("should return the price 59 for the product F", () => {
-      expect(Supermarket.getPriceFor("F")).toEqual(59);
+      expect(getPriceFor("F")).toEqual(59);
     });
 
     it("should ignore an unknown product", () => {
-      expect(Supermarket.getPriceFor("Z")).toEqual(0); 
+      expect(getPriceFor("Z")).toEqual(0); 
     });
 
     it("should return the sum of the product prices", () => {
-      expect(Supermarket.getPriceFor("BB")).toEqual(26); 
+      expect(getPriceFor("BB")).toEqual(26); 
     });
 
     it("should return the sum of the product prices", () => {
-      expect(Supermarket.getPriceFor("DE")).toEqual(66); 
+      expect(getPriceFor("DE")).toEqual(66); 
     });
 
     it("should return the sum of the product prices", () => {
-      expect(Supermarket.getPriceFor("DE")).toEqual(66); 
+      expect(getPriceFor("DE")).toEqual(66); 
     });
 
     it("should return a list with information for each product", () => {
-      expect(Supermarket.getSummaryFor("AAAB")).toEqual([
+      expect(getSummaryFor("AAAB")).toEqual([
         {
           product: "A",
           unitPrice: 84,
@@ -61,7 +75,7 @@ describe("supermarket pricing", () => {
     });
 
     it("should return a sorted summary for each product", () => {
-      expect(Supermarket.getSummaryFor("AABCFA DF FFF")).toEqual([
+      expect(getSummaryFor("AABCFA DF FFF")).toEqual([
         {
           product: "A",
           unitPrice: 84,
@@ -94,13 +108,22 @@ describe("supermarket pricing", () => {
         }
       ]);
     });
-
-
   });
 
   describe("#getTaxedPriceFor", () => {
+    const productTaxes = {
+      "A": 4,
+      "B": 12,
+      "C": 21,
+      "D": 21,
+      "E": 4,
+      "F": 17
+    };
+
+    let getPriceFor = R.partialRight(Supermarket.getPriceFor, productPrices, productTaxes);
+
     it("should return the price 87.36 for the product A", () => {
-      expect(Supermarket.getTaxedPriceFor("A")).toEqual(87.36);
+      expect(getPriceFor("A")).toEqual(87.36);
     });
   });
 });

@@ -8,7 +8,5 @@ var frequencies = (coll) => {
   }, {});
 };
 
-console.log(frequencies("AABCFFFFDAF".split("")));
-
 export { sum };
 export { frequencies };

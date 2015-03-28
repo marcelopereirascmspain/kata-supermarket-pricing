@@ -1,5 +1,4 @@
 import { sum, frequencies } from "./utils";
-import { productPrices, productTaxes } from "./data";
 import R from "ramda";
 
 let isProductNameValid = (name, validNames) => R.contains(name, validNames);
@@ -30,25 +29,16 @@ let getTotalPriceForProduct = (id, prices, numberOfProducts) => {
 let sortByProductName = R.sortBy(R.prop("product"));
 
 module.exports = {
-  getPriceFor: (scanned) => {
+  getPriceFor: (scanned, productPrices, productTaxes) => {
     let productNames = Object.keys(productPrices);
 
     return (
       getValidProductNames(scanned, productNames)
-      .map((productNames) => getPriceForProduct(productNames, productPrices))
+      .map((productNames) => getTaxedPriceForProduct(productNames, productPrices, productTaxes))
       .reduce(sum, 0));
   },
 
-  getTaxedPriceFor: (scanned) => {
-    let productNames = Object.keys(productPrices);
-
-    return (
-      getValidProductNames(scanned, productNames)
-      .map((productName) => getTaxedPriceForProduct(productName, productPrices, productTaxes))
-      .reduce(sum, 0));
-  },
-
-  getSummaryFor: (scanned) => {
+  getSummaryFor: (scanned, productPrices, productTaxes) => {
     let productNames = R.uniq(
       getValidProductNames(scanned, Object.keys(productPrices)));
 
