@@ -1,14 +1,14 @@
-var get = (key, obj) => obj[key];
-
-var getOrDefault = (key, obj, defaultValue) => {
-  try {
-    return get(key, obj);
-  } catch (ex) {
-    return defaultValue;
-  }
-};
+import R from "ramda";
 
 var sum = (a, b) => a + b;
 
-export { getOrDefault };
+var frequencies = (coll) => {
+  return coll.reduce((acc, next) => {
+    return R.merge(acc, {[next]: R.inc(R.propOr(0, next, acc))});
+  }, {});
+};
+
+console.log(frequencies("AABCFFFFDAF".split("")));
+
 export { sum };
+export { frequencies };
