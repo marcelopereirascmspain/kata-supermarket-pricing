@@ -1,11 +1,14 @@
 import { sum, frequencies } from "./utils";
 import R from "ramda";
+import { calculateProductsToPay } from "./offer";
 
-let isProductNameValid = (name, validNames) => R.contains(name, validNames);
+let isProductIdValid = (id, validIds) => R.contains(id, validIds);
 
-let getValidProductNames = (scannedValue, validNames) => {
-  return scannedValue.split("").filter((name) => {
-    return isProductNameValid(name, validNames);
+let getProductList = (scanned) => R.split("", scanned);
+
+let getValidProductIds = (productList, validIds) => {
+  return productList.filter((id) => {
+    return isProductIdValid(id, validIds);
   });
 };
 
@@ -18,37 +21,48 @@ let getTaxedPriceForProduct = (id, prices, taxes) => {
     (getTaxForProduct(id, taxes) / 100 + 1));
 };
 
-let getNumberOfScannedProducts = (id, scanned) => {
-  return R.prop(id, frequencies(R.split("", scanned)));
+let getNumberOfScannedProducts = (id, productList) => {
+  return R.prop(id, frequencies(productList));
 };
 
-let getTotalPriceForProduct = (id, prices, numberOfProducts) => {
-  return getPriceForProduct(id, prices) * numberOfProducts;
+let getNumberOfProductsToPay = (id, products, offers) => {
+  let numberOfScannedProducts = getNumberOfScannedProducts(id, products);
+  let offer = R.prop(id, offers);
+
+  return calculateProductsToPay(numberOfScannedProducts, offer);
 };
 
-let sortByProductName = R.sortBy(R.prop("product"));
+let getTotalPriceForProduct = (id, prices, taxes, numberOfProducts) => {
+  return getTaxedPriceForProduct(id, prices, taxes) * numberOfProducts;
+};
 
-module.exports = {
-  getPriceFor: (scanned, productPrices, productTaxes) => {
-    let productNames = Object.keys(productPrices);
+let sortByProductId = R.sortBy(R.prop("product"));
+
+export default {
+  getPriceFor: (scanned, prices, taxes) => {
+    let productList = getProductList(scanned);
+    let productIds = Object.keys(prices);
 
     return (
-      getValidProductNames(scanned, productNames)
-      .map((productNames) => getTaxedPriceForProduct(productNames, productPrices, productTaxes))
+      getValidProductIds(productList, productIds)
+      .map((ids) => getTaxedPriceForProduct(ids, prices, taxes))
       .reduce(sum, 0));
   },
 
-  getSummaryFor: (scanned, productPrices, productTaxes) => {
-    let productNames = R.uniq(
-      getValidProductNames(scanned, Object.keys(productPrices)));
+  getSummaryFor: (scanned, prices, taxes, offers) => {
+    let products = getProductList(scanned);
+    let productIds =
+      R.uniq(getValidProductIds(products, Object.keys(prices)));
 
-    return sortByProductName(productNames.map((name) => {
-      let numberOfProducts = getNumberOfScannedProducts(name, scanned); 
+    return sortByProductId(productIds.map((id) => {
+      let numberOfProducts = getNumberOfScannedProducts(id, products); 
+      let numberOfProductsToPay = getNumberOfProductsToPay(id, products, offers);
+
       return {
-        product: name,
-        unitPrice: getPriceForProduct(name, productPrices),
+        product: id,
+        unitPrice: getPriceForProduct(id, prices),
         numberOfProducts: numberOfProducts,
-        total: getTotalPriceForProduct(name, productPrices, numberOfProducts)
+        total: getTotalPriceForProduct(id, prices, taxes, numberOfProductsToPay)
       };
     }));
   }

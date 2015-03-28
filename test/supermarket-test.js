@@ -1,5 +1,5 @@
 import expect from "expect";
-import { productPrices, productTaxes } from "../src/data";
+import { productPrices } from "../src/data";
 import Supermarket from "../src/supermarket";
 import R from "ramda";
 
@@ -14,8 +14,27 @@ describe("supermarket pricing", () => {
       "F": 0
     };
 
-    let getPriceFor = R.partialRight(Supermarket.getPriceFor, productPrices, productTaxes);
-    let getSummaryFor = R.partialRight(Supermarket.getSummaryFor, productPrices, productTaxes);
+    const productOffers = {
+      "A": {take: 1, pay: 1},
+      "B": {take: 1, pay: 1},
+      "C": {take: 1, pay: 1},
+      "D": {take: 1, pay: 1},
+      "E": {take: 1, pay: 1},
+      "F": {take: 1, pay: 1}
+    };
+
+    let getPriceFor =
+      R.partialRight(
+        Supermarket.getPriceFor,
+        productPrices,
+        productTaxes);
+
+    let getSummaryFor =
+      R.partialRight(
+        Supermarket.getSummaryFor,
+        productPrices,
+        productTaxes,
+        productOffers);
 
     it("should return the price 84 for the product A", () => {
       expect(getPriceFor("A")).toEqual(84);
@@ -110,6 +129,74 @@ describe("supermarket pricing", () => {
     });
   });
 
+  describe("offers", () => {
+    const productTaxes = {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0,
+      "E": 0,
+      "F": 0
+    };
+
+    const productOffers = {
+      "A": {take: 2, pay: 1},
+      "B": {take: 3, pay: 2},
+      "C": {take: 1, pay: 1},
+      "D": {take: 2, pay: 1},
+      "E": {take: 1, pay: 1},
+      "F": {take: 3, pay: 1}
+    };
+
+    let getTaxedPriceFor =
+      R.partialRight(
+        Supermarket.getPriceFor,
+        productPrices,
+        productTaxes);
+
+    let getSummaryFor =
+      R.partialRight(
+        Supermarket.getSummaryFor,
+        productPrices,
+        productTaxes,
+        productOffers);
+
+    it("should return a sorted summary for each product", () => {
+      expect(getSummaryFor("AABCFBA DF FFF")).toEqual([
+        {
+          product: "A",
+          unitPrice: 84,
+          numberOfProducts: 3,
+          total: 168
+        },
+        {
+          product: "B",
+          unitPrice: 13,
+          numberOfProducts: 2,
+          total: 26
+        },
+        {
+          product: "C",
+          unitPrice: 62,
+          numberOfProducts: 1,
+          total: 62
+        },
+        {
+          product: "D",
+          unitPrice: 64,
+          numberOfProducts: 1,
+          total: 64
+        },
+        {
+          product: "F",
+          unitPrice: 59,
+          numberOfProducts: 5,
+          total: 177
+        }
+      ]);
+    });
+  });
+
   describe("#getTaxedPriceFor", () => {
     const productTaxes = {
       "A": 4,
@@ -120,10 +207,65 @@ describe("supermarket pricing", () => {
       "F": 17
     };
 
-    let getPriceFor = R.partialRight(Supermarket.getPriceFor, productPrices, productTaxes);
+    const productOffers = {
+      "A": {take: 1, pay: 1},
+      "B": {take: 1, pay: 1},
+      "C": {take: 1, pay: 1},
+      "D": {take: 1, pay: 1},
+      "E": {take: 1, pay: 1},
+      "F": {take: 1, pay: 1}
+    };
+
+    let getTaxedPriceFor =
+      R.partialRight(
+        Supermarket.getPriceFor,
+        productPrices,
+        productTaxes);
+
+    let getSummaryFor = 
+      R.partialRight(
+        Supermarket.getSummaryFor,
+        productPrices,
+        productTaxes,
+        productOffers);
 
     it("should return the price 87.36 for the product A", () => {
-      expect(getPriceFor("A")).toEqual(87.36);
+      expect(getTaxedPriceFor("A")).toEqual(87.36);
+    });
+
+    it("should return a sorted summary for each product where the total price includes taxes", () => {
+      expect(getSummaryFor("AABCFA DF FFF")).toEqual([
+        {
+          product: "A",
+          unitPrice: 84,
+          numberOfProducts: 3,
+          total: 262.08
+        },
+        {
+          product: "B",
+          unitPrice: 13,
+          numberOfProducts: 1,
+          total: 14.560000000000002
+        },
+        {
+          product: "C",
+          unitPrice: 62,
+          numberOfProducts: 1,
+          total: 75.02
+        },
+        {
+          product: "D",
+          unitPrice: 64,
+          numberOfProducts: 1,
+          total: 77.44
+        },
+        {
+          product: "F",
+          unitPrice: 59,
+          numberOfProducts: 5,
+          total: 345.15
+        }
+      ]);
     });
   });
 });
