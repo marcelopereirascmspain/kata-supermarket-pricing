@@ -8,5 +8,4 @@ var frequencies = (coll) => {
   }, {});
 };
 
-export { sum };
-export { frequencies };
+export default { sum, frequencies };

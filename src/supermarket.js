@@ -1,6 +1,7 @@
 import { sum, frequencies } from "./utils";
 import R from "ramda";
-import { calculateProductsToPay } from "./offer";
+import { applyOffer } from "./offer";
+import { applyTax } from "./tax";
 
 let isProductIdValid = (id, validIds) => R.contains(id, validIds);
 
@@ -16,9 +17,9 @@ let getPriceForProduct = (id, prices) => R.propOr(0, id)(prices);
 let getTaxForProduct = (id, taxes) => R.propOr(0, id)(taxes);
 
 let getTaxedPriceForProduct = (id, prices, taxes) => {
-  return (
-    getPriceForProduct(id, prices) *
-    (getTaxForProduct(id, taxes) / 100 + 1));
+  return applyTax(
+    getPriceForProduct(id, prices),
+    getTaxForProduct(id, taxes));
 };
 
 let getNumberOfScannedProducts = (id, productList) => {
@@ -29,7 +30,7 @@ let getNumberOfProductsToPay = (id, products, offers) => {
   let numberOfScannedProducts = getNumberOfScannedProducts(id, products);
   let offer = R.prop(id, offers);
 
-  return calculateProductsToPay(numberOfScannedProducts, offer);
+  return applyOffer(numberOfScannedProducts, offer);
 };
 
 let getTotalPriceForProduct = (id, prices, taxes, numberOfProducts) => {
@@ -55,7 +56,7 @@ export default {
       R.uniq(getValidProductIds(products, Object.keys(prices)));
 
     return sortByProductId(productIds.map((id) => {
-      let numberOfProducts = getNumberOfScannedProducts(id, products); 
+      let numberOfProducts = getNumberOfScannedProducts(id, products);
       let numberOfProductsToPay = getNumberOfProductsToPay(id, products, offers);
 
       return {

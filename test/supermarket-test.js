@@ -4,24 +4,9 @@ import Supermarket from "../src/supermarket";
 import R from "ramda";
 
 describe("supermarket pricing", () => {
-  describe("#getPriceFor", () => {
-    const productTaxes = {
-      "A": 0,
-      "B": 0,
-      "C": 0,
-      "D": 0,
-      "E": 0,
-      "F": 0
-    };
-
-    const productOffers = {
-      "A": {take: 1, pay: 1},
-      "B": {take: 1, pay: 1},
-      "C": {take: 1, pay: 1},
-      "D": {take: 1, pay: 1},
-      "E": {take: 1, pay: 1},
-      "F": {take: 1, pay: 1}
-    };
+  describe("prices", () => {
+    const productTaxes = {};
+    const productOffers = {};
 
     let getPriceFor =
       R.partialRight(
@@ -61,19 +46,19 @@ describe("supermarket pricing", () => {
     });
 
     it("should ignore an unknown product", () => {
-      expect(getPriceFor("Z")).toEqual(0); 
+      expect(getPriceFor("Z")).toEqual(0);
     });
 
     it("should return the sum of the product prices", () => {
-      expect(getPriceFor("BB")).toEqual(26); 
+      expect(getPriceFor("BB")).toEqual(26);
     });
 
     it("should return the sum of the product prices", () => {
-      expect(getPriceFor("DE")).toEqual(66); 
+      expect(getPriceFor("DE")).toEqual(66);
     });
 
     it("should return the sum of the product prices", () => {
-      expect(getPriceFor("DE")).toEqual(66); 
+      expect(getPriceFor("DE")).toEqual(66);
     });
 
     it("should return a list with information for each product", () => {
@@ -130,14 +115,7 @@ describe("supermarket pricing", () => {
   });
 
   describe("offers", () => {
-    const productTaxes = {
-      "A": 0,
-      "B": 0,
-      "C": 0,
-      "D": 0,
-      "E": 0,
-      "F": 0
-    };
+    const productTaxes = {};
 
     const productOffers = {
       "A": {take: 2, pay: 1},
@@ -197,7 +175,7 @@ describe("supermarket pricing", () => {
     });
   });
 
-  describe("#getTaxedPriceFor", () => {
+  describe("taxes", () => {
     const productTaxes = {
       "A": 4,
       "B": 12,
@@ -207,14 +185,7 @@ describe("supermarket pricing", () => {
       "F": 17
     };
 
-    const productOffers = {
-      "A": {take: 1, pay: 1},
-      "B": {take: 1, pay: 1},
-      "C": {take: 1, pay: 1},
-      "D": {take: 1, pay: 1},
-      "E": {take: 1, pay: 1},
-      "F": {take: 1, pay: 1}
-    };
+    const productOffers = {};
 
     let getTaxedPriceFor =
       R.partialRight(
@@ -222,7 +193,7 @@ describe("supermarket pricing", () => {
         productPrices,
         productTaxes);
 
-    let getSummaryFor = 
+    let getSummaryFor =
       R.partialRight(
         Supermarket.getSummaryFor,
         productPrices,
